@@ -34,13 +34,12 @@ variable "proxy_machine_type" {
 }
 
 variable "github_repo_url" {
-  description = "URL del repositorio u organización para el runner"
+  description = "URL del org o repo GitHub donde registrar el runner"
   type        = string
-  # Ej: "https://github.com/cloudnative-aldotrucios"
 }
 
 variable "github_registration_token" {
-  description = "Registration token del runner de GitHub"
+  description = "Registration token (expira rápido)"
   type        = string
   sensitive   = true
 }
@@ -52,7 +51,7 @@ variable "runner_labels" {
 }
 
 variable "runner_version" {
-  description = "Versión del GitHub Actions runner"
+  description = "Versión del runner"
   type        = string
   default     = "2.329.0"
 }
