@@ -276,3 +276,24 @@ resource "google_compute_firewall" "proxy_egress_internet" {
 
   description = "Permite al proxy salir a internet por 80/443"
 }
+
+# Permitir SSH desde IAP solo a las VMs con tag "github-runner"
+resource "google_compute_firewall" "runner_ingress_ssh_iap" {
+  name      = "github-runner-ingress-ssh-iap"
+  network   = google_compute_network.runner_vpc.id
+  direction = "INGRESS"
+  priority  = 1000
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  # Rango de IPs de IAP para túneles TCP
+  source_ranges = ["35.235.240.0/20"]
+
+  target_tags = ["github-runner"]
+
+  description = "Permite SSH (22) al runner sólo a través de IAP"
+}
+
