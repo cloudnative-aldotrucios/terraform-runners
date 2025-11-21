@@ -179,18 +179,21 @@ set -euxo pipefail
 mkdir -p /opt/actions-runner
 cd /opt/actions-runner
 
-RUNNER_VERSION="${var.runner_version}"
-
-curl -Ls -o actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
-  https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
-tar xzf actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
+# Download and unpack the runner using version from Terraform variables.  We
+# deliberately expand ${var.runner_version} here so Terraform performs the
+# interpolation at apply time.  Note the use of double dollar signs ($$) to
+# escape shell variables (e.g. HOSTNAME) and avoid Terraform interpolation
+# inside the heredoc.
+curl -Ls -o actions-runner-linux-x64-${var.runner_version}.tar.gz \
+  https://github.com/actions/runner/releases/download/v${var.runner_version}/actions-runner-linux-x64-${var.runner_version}.tar.gz
+tar xzf actions-runner-linux-x64-${var.runner_version}.tar.gz
 
 # Configure the runner (unattended) using the provided registration token
 ./config.sh --unattended \
   --url "${var.github_repo_url}" \
   --token "${var.github_token}" \
   --labels "${var.runner_labels}" \
-  --name "gcp-${HOSTNAME}" \
+  --name "gcp-$${HOSTNAME}" \
   --work "_work"
 
 # Install and start the runner as a system service
