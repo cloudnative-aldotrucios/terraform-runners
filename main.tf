@@ -125,9 +125,9 @@ resource "google_compute_instance" "runner" {
 
     # 3. Configurar el runner en modo no interactivo
     ./config.sh --unattended \
-      --url "${GITHUB_URL}" \
-      --token "${REG_TOKEN}" \
-      --labels "${RUNNER_LABELS}" \
+      --url "\${GITHUB_URL}" \
+      --token "\${REG_TOKEN}" \
+      --labels "\${RUNNER_LABELS}" \
       --name "gcp-$(hostname)" \
       --work "_work"
 
