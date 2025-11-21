@@ -1,20 +1,15 @@
-# Replace the values below with your own configuration.  Do not commit
-# sensitive values (such as github_token) to source control.
+project_id = "hale-monument-477117-k8"
+region     = "us-central1"
+zone       = "us-central1-a"
 
-project_id  = "hale-monument-477117-k8"
-region      = "us-central1"
-zone        = "us-central1-a"
+network_cidr = "10.10.0.0/24"
 
-# The GitHub organisation or repository URL where the self‑hosted runner will
-# register.  For example: "https://github.com/my-org" or
-# "https://github.com/my-org/my-repo".
-github_repo_url = "https://github.com/cloudnative-aldotrucios"
+github_url = "https://github.com/cloudnative-aldotrucios"
 
-# Registration token for the self‑hosted runner.  Generate this token from
-# GitHub (Settings → Actions → Runners → New runner) immediately before
-# running `terraform apply`.
-github_token    = "AFA3YWFVAVLROLGK4XY4LR3JEDOCE"
+# GENERA un token nuevo en:
+# Settings -> Actions -> Runners -> New runner
+github_token = "AFA3YWFS4SLJLLMCOMYNLR3JEDTUS"
 
-# Optional: customise labels and machine type if required.
-runner_labels   = "self‑hosted,gcp"
-machine_type    = "e2-medium"
+runner_labels  = "gcp,self-hosted"
+runner_version = "2.329.0"
+runner_machine_type = "e2-medium"
