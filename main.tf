@@ -157,48 +157,50 @@ resource "google_compute_instance" "runner" {
   metadata_startup_script = <<-EOT
     #!/bin/bash
     set -euxo pipefail
-
+  
     RUNNER_VERSION="${var.runner_version}"
     GITHUB_URL="${var.github_repo_url}"
     RUNNER_TOKEN="${var.github_registration_token}"
     RUNNER_LABELS="${var.runner_labels}"
     PROXY_IP="${google_compute_instance.proxy.network_interface[0].network_ip}"
     PROXY_PORT="3128"
-
+  
     # Configurar proxy a nivel de sistema
     echo "HTTP_PROXY=http://$${PROXY_IP}:$${PROXY_PORT}" >> /etc/environment
     echo "HTTPS_PROXY=http://$${PROXY_IP}:$${PROXY_PORT}" >> /etc/environment
     echo "NO_PROXY=169.254.169.254,metadata.google.internal,localhost,127.0.0.1" >> /etc/environment
-
+  
     export HTTP_PROXY="http://$${PROXY_IP}:$${PROXY_PORT}"
     export HTTPS_PROXY="http://$${PROXY_IP}:$${PROXY_PORT}"
     export NO_PROXY="169.254.169.254,metadata.google.internal,localhost,127.0.0.1"
-
+  
     apt-get update -y
     apt-get install -y curl tar
-
+  
+    # Usuario runner
     id runner || useradd -m -s /bin/bash runner
-
+  
     mkdir -p /opt/actions-runner
     chown runner:runner /opt/actions-runner
     cd /opt/actions-runner
-
+  
+    # Descargar y extraer el runner como usuario runner
     sudo -u runner bash -c "
       set -euxo pipefail
-
-      curl -o actions-runner-linux-x64-${var.runner_version}.tar.gz -L https://github.com/actions/runner/releases/download/v${var.runner_version}/actions-runner-linux-x64-${var.runner_version}.tar.gz
-      tar xzf ./actions-runner-linux-x64-${var.runner_version}.tar.gz
-
-      ./config.sh --unattended \\
-        --url '${var.github_repo_url}' \\
-        --token '${var.github_registration_token}' \\
-        --labels '${var.runner_labels}' \\
-        --name 'gcp-$${HOSTNAME}' \\
+      curl -o actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
+      tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
+  
+      ./config.sh --unattended \
+        --url '${GITHUB_URL}' \
+        --token '${RUNNER_TOKEN}' \
+        --labels '${RUNNER_LABELS}' \
+        --name 'gcp-\${HOSTNAME}' \
         --work '_work'
-
-      sudo ./svc.sh install
-      sudo ./svc.sh start
     "
+  
+    # Importante: instalar y arrancar el servicio como root (NO como runner)
+    ./svc.sh install
+    ./svc.sh start
   EOT
 }
 
