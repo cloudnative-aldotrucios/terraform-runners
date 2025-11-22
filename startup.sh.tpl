@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euxo pipefail
 
 GITHUB_URL="${github_url}"
 RUNNER_VERSION="${runner_version}"
@@ -8,20 +9,24 @@ GITHUB_TOKEN="${github_token}"
 apt-get update -y
 apt-get install -y curl tar
 
-mkdir -p /opt/actions-runner
-cd /opt/actions-runner
+useradd -m -d /home/github-runner -s /bin/bash github-runner || true
 
-curl -Ls -o actions-runner.tar.gz \
-  "https://github.com/actions/runner/releases/download/v${runner_version}/actions-runner-linux-x64-${runner_version}.tar.gz"
+sudo -u github-runner bash -lc "
+  mkdir -p ~/actions-runner
+  cd ~/actions-runner
 
-tar xzf actions-runner.tar.gz
+  curl -Ls -o actions-runner.tar.gz \
+    \"https://github.com/actions/runner/releases/download/v${runner_version}/actions-runner-linux-x64-${runner_version}.tar.gz\"
 
-./config.sh --unattended \
-  --url "${github_url}" \
-  --token "${github_token}" \
-  --labels "${runner_labels}" \
-  --name "gcp-$(hostname)" \
-  --work "_work"
+  tar xzf actions-runner.tar.gz
 
-./svc.sh install
-./svc.sh start
+  ./config.sh --unattended \
+    --url \"${GITHUB_URL}\" \
+    --token \"${GITHUB_TOKEN}\" \
+    --labels \"${RUNNER_LABELS}\" \
+    --name \"gcp-\$(hostname)\" \
+    --work \"_work\"
+
+  ./svc.sh install
+  ./svc.sh start
+"
