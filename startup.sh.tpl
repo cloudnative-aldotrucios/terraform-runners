@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-# Estos ${...} son variables del template de Terraform (minúsculas)
+# Terraform variables que vienen del template
 GITHUB_URL="${github_url}"
 RUNNER_VERSION="${runner_version}"
 RUNNER_LABELS="${runner_labels}"
@@ -13,13 +13,13 @@ apt-get install -y curl tar
 mkdir -p /opt/actions-runner
 cd /opt/actions-runner
 
-# OJO: aquí solo usamos variables Bash ($RUNNER_VERSION), SIN ${...}
+# Usar variables Bash sin llaves, solo con el signo $
 curl -Ls -o actions-runner.tar.gz \
   "https://github.com/actions/runner/releases/download/v$RUNNER_VERSION/actions-runner-linux-x64-$RUNNER_VERSION.tar.gz"
 
 tar xzf actions-runner.tar.gz
 
-# Necesario para correr como root en GCE
+# Requerido para ejecutar config.sh como root en GCE
 export RUNNER_ALLOW_RUNASROOT=1
 
 ./config.sh --unattended \
