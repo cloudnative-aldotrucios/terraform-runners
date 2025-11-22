@@ -5,7 +5,7 @@ zone       = "us-central1-a"
 network_cidr = "10.10.0.0/24"
 
 github_url   = "https://github.com/cloudnative-aldotrucios"
-github_token = "AFA3YWFXQEQKVCPX7ZVWL7LJEHNOO"
+github_token = "AFA3YWBQI4F6L4YS5RRGRFLJEHO4I"
 
 runner_labels        = "gcp,self-hosted"
 runner_version       = "2.329.0"
